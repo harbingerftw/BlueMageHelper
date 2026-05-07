@@ -11,6 +11,7 @@ using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 using static BlueMageHelper.SpellSources;
+using ActionKind = Dalamud.Game.ActionKind;
 using MapType = FFXIVClientStructs.FFXIV.Client.UI.Agent.MapType;
 
 namespace BlueMageHelper.Windows;
@@ -55,7 +56,7 @@ public class MainWindow : Window, IDisposable
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };
 
-        TitleBarButtons.Add(new()
+        TitleBarButtons.Add(new TitleBarButton
         {
             Icon = FontAwesomeIcon.Cog,
             ShowTooltip = () => ImGui.SetTooltip("Open Config"),
@@ -76,9 +77,10 @@ public class MainWindow : Window, IDisposable
             AllBlueSpells = Plugin.AozActionsCache
                 .Select(a => new BlueSpell
                 {
-                    Name = a.Action.Value.Name.ToString(),
+                    Name = Services.SeStringEvaluator.EvaluateActStr(ActionKind.Action, a.Action.RowId),
                     Description = Plugin.ActionTransient.GetRow(a.Action.RowId).Description.ToString(),
-                    Location = string.Join("|",Spells[Plugin.AozTransientCache[(int)a.RowId - 1].Number].Sources.Select(s=>s.PlaceName)),
+                    Location = string.Join("|",
+                        Spells[Plugin.AozTransientCache[(int)a.RowId - 1].Number].Sources.Select(s => s.PlaceName)),
                     Number = Plugin.AozTransientCache[(int)a.RowId - 1].Number,
                     IconId = Plugin.AozTransientCache[(int)a.RowId - 1].Icon
                 })
@@ -225,22 +227,6 @@ public class MainWindow : Window, IDisposable
                         : "Currently Unknown");
                 }
 
-                // switch (source.Type)
-                // {
-                //     case RegionType.ARank:
-                //         ImGui.Text($"Note: Rank A Elite Mark");
-                //         break;
-                //     case RegionType.BRank:
-                //         ImGui.Text($"Note: Rank B Elite Mark");
-                //         break;
-                //     case RegionType.SRank:
-                //         ImGui.Text($"Note: Rank S Elite Mark");
-                //         break;
-                // }
-
-                // if (source.TerritoryTypeId != 0)
-                //     ImGui.Text($"Location: {source.Location[0]}, {source.Location[1]}");
-
                 if (source.Type != RegionType.Buy && source.DutyMinLevel != "1" || source.LevelMin != 0)
                     ImGui.Text($"Min Level: {source.DutyMinLevel}");
 
@@ -352,7 +338,7 @@ public class MainWindow : Window, IDisposable
         using (var bottomBar = ImRaii.Child("BottomBar", new Vector2(0, 0)))
         {
             if (bottomBar.Success)
-                ImGui.TextDisabled("Data sourced from ffxiv.consolegameswiki.com");
+                ImGui.TextDisabled($"{Plugin.UnlockedSpells.Values.Count(x => x)}/{Spells.Count} spells learned");
         }
     }
 

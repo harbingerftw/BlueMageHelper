@@ -55,9 +55,9 @@ public class ConfigWindow : Window, IDisposable
             changed |= ImGui.Checkbox("Show only unlearned spells.", ref Plugin.Configuration.ShowOnlyUnlearned);
 
         ImGuiHelpers.ScaledDummy(5.0f);
-        ImGui.TextColored(ImGuiColors.DalamudViolet, "Mob Head Markers:");
+        ImGui.TextColored(ImGuiColors.DalamudViolet, "Head Markers:");
         using (ImRaii.PushIndent(10.0f))
-            changed |= ImGui.Checkbox("Mark mobs that drop a Blue spell.",
+            changed |= ImGui.Checkbox("Mark mobs that drop unlearned Blue mage spells.",
                 ref Plugin.Configuration.MarkMobsInWorld);
 
         if (changed)
@@ -95,6 +95,11 @@ public class ConfigWindow : Window, IDisposable
                 ImGui.SameLine();
                 ImGui.TextColored(ImGuiColors.ParsedOrange,
                     Services.PluginInterface.Manifest.AssemblyVersion.ToString());
+
+                ImGuiHelpers.ScaledDummy(3f);
+                ImGui.TextUnformatted("Data Sources:");
+                ImGui.TextColored(ImGuiColors.ParsedGold, "ffxiv.consolegameswiki.com");
+                ImGui.TextColored(ImGuiColors.ParsedGold, "gacha.infi.ovh/bnpc");
             }
         }
 

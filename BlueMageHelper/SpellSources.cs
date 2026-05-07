@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Dalamud.Game;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -42,7 +43,6 @@ public class SpellSource
     [NonSerialized] public TerritoryType? TerritoryType = null;
     [NonSerialized] public Map? Map = null;
     [NonSerialized] public MapLinkPayload? MapLink = null;
-    [NonSerialized] public Spell? Spell;
 
     [NonSerialized] public bool IsDuty;
     [NonSerialized] public string DutyName = "";

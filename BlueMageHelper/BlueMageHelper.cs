@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Timers;
 using BlueMageHelper.IPC;
 using BlueMageHelper.Windows;
+using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
@@ -117,10 +118,10 @@ public sealed class Plugin : IDalamudPlugin
             }
         }
 
-// #if DEBUG
-//         this.MainWindow.IsOpen = true;
-//         // this.ConfigWindow.IsOpen = true;
-// #endif
+#if DEBUG
+        MainWindow.IsOpen = true;
+        ConfigWindow.IsOpen = true;
+#endif
     }
 
     private void CheckLearnedSpells(IFramework framework)
@@ -143,7 +144,6 @@ public sealed class Plugin : IDalamudPlugin
         foreach (var (transient, action) in AozTransientCache.Zip(AozActionsCache).OrderBy(pair => pair.First.Number))
         {
             var unlocked = SpellUnlocked(action.Action.Value.UnlockLink.RowId);
-            // MobsByTerritory.ContainsKey()
             UnlockedSpells.Add(transient.Number, unlocked);
         }
 
@@ -230,8 +230,6 @@ public sealed class Plugin : IDalamudPlugin
         if (location.TerritoryType == null)
             return;
 
-        Services.Log.Info($"ttid: {location.TerritoryTypeId}");
-
         var map = location.TerritoryType.Value.Map.Value;
         var nearestAetheryteId = MapMarkerSheet
             .SelectMany(x => x)
@@ -261,6 +259,10 @@ public sealed class Plugin : IDalamudPlugin
                                                    (UnlockedSpells.TryGetValue(num, out var isUnlocked) &&
                                                     !isUnlocked);
 
+    public static bool IsBluMage() {
+        return Services.PlayerState.ClassJob.RowId == 36;
+    }
+
 
     private static Vector2 ConvertLocationToRaw(int x, int y, float scale)
     {
@@ -282,10 +284,11 @@ public sealed class Plugin : IDalamudPlugin
         foreach (var kvp in Spells)
         {
             kvp.Value.Number = kvp.Key;
+            var aat = AozTransientCache.First(a => a.Number == kvp.Key);
+            kvp.Value.Name = Services.SeStringEvaluator.EvaluateActStr(ActionKind.Action,
+                AozActionsCache.First(c => c.RowId == aat.RowId).Action.RowId);
             foreach (var src in kvp.Value.Sources)
             {
-                src.Spell = kvp.Value;
-
                 if (!MobsByTerritory.TryGetValue(src.TerritoryTypeId, out var record))
                 {
                     record = new TerritoryNpcRecords();

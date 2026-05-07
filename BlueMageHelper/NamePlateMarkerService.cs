@@ -18,10 +18,9 @@ public static class NamePlateMarkerService
         IReadOnlyList<INamePlateUpdateHandler> handlers)
     {
         var localPlayer = Services.ObjectTable.LocalPlayer;
-        if (localPlayer == null) return;
+        if (localPlayer == null || !Plugin.IsBluMage() || !Plugin.Configuration.MarkMobsInWorld) return;
         try
         {
-            if (!Plugin.Configuration.MarkMobsInWorld) return;
             if (!Plugin.MobsByTerritory.TryGetValue(Services.ClientState.TerritoryType, out var record)) return;
 
             foreach (var h in handlers)
