@@ -118,10 +118,10 @@ public sealed class Plugin : IDalamudPlugin
             }
         }
 
-#if DEBUG
-        MainWindow.IsOpen = true;
-        ConfigWindow.IsOpen = true;
-#endif
+// #if DEBUG
+//         MainWindow.IsOpen = true;
+//         ConfigWindow.IsOpen = true;
+// #endif
     }
 
     private void CheckLearnedSpells(IFramework framework)
