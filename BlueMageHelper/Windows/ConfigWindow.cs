@@ -46,19 +46,27 @@ public class ConfigWindow : Window, IDisposable
 
         ImGui.TextColored(ImGuiColors.DalamudViolet, "Vanilla Spellbook:");
         using (ImRaii.PushIndent(10.0f))
-            changed |= ImGui.Checkbox("Show hint even if a spell is already unlocked.",
+            changed |= ImGui.Checkbox("Add hint even if a spell is already unlocked.",
                 ref Plugin.Configuration.ShowHintEvenIfUnlocked);
 
         ImGuiHelpers.ScaledDummy(5.0f);
         ImGui.TextColored(ImGuiColors.DalamudViolet, "Spellbook:");
         using (ImRaii.PushIndent(10.0f))
-            changed |= ImGui.Checkbox("Show only unlearned spells.", ref Plugin.Configuration.ShowOnlyUnlearned);
+            changed |= ImGui.Checkbox("List only unlearned spells.", ref Plugin.Configuration.ShowOnlyUnlearned);
 
         ImGuiHelpers.ScaledDummy(5.0f);
         ImGui.TextColored(ImGuiColors.DalamudViolet, "Head Markers:");
         using (ImRaii.PushIndent(10.0f))
+        {
             changed |= ImGui.Checkbox("Mark mobs that drop unlearned Blue mage spells.",
                 ref Plugin.Configuration.MarkMobsInWorld);
+            using (ImRaii.Disabled(!Plugin.Configuration.MarkMobsInWorld))
+            {
+                changed |= ImGui.Checkbox("Mark mobs all the time", ref Plugin.Configuration.MarkMobsAllTheTime);
+                ImGui.SameLine();
+                Helper.DrawInfoTooltip("Will mark mobs even if you learned the spell, and on any job!");
+            }
+        }
 
         if (changed)
         {

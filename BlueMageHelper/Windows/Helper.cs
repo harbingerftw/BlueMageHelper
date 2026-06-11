@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
@@ -60,5 +61,20 @@ public static class Helper
         }
 
         return changed;
+    }
+
+    public static void DrawInfoTooltip(string text)
+    {
+        {
+            using var font = ImRaii.PushFont(UiBuilder.IconFont);
+            using var color = ImRaii.PushColor(ImGuiCol.Text, KnownColor.LightSkyBlue.Vector());
+            ImGui.Text(FontAwesomeIcon.InfoCircle.ToIconString());
+        }
+
+        if (ImGui.IsItemHovered())
+        {
+            using (ImRaii.Tooltip())
+                ImGui.Text(text);
+        }
     }
 }

@@ -119,8 +119,8 @@ public sealed class Plugin : IDalamudPlugin
         }
 
 // #if DEBUG
-//         MainWindow.IsOpen = true;
-//         ConfigWindow.IsOpen = true;
+        MainWindow.IsOpen = true;
+        ConfigWindow.IsOpen = true;
 // #endif
     }
 
@@ -259,7 +259,8 @@ public sealed class Plugin : IDalamudPlugin
                                                    (UnlockedSpells.TryGetValue(num, out var isUnlocked) &&
                                                     !isUnlocked);
 
-    public static bool IsBluMage() {
+    public static bool IsBluMage()
+    {
         return Services.PlayerState.ClassJob.RowId == 36;
     }
 
@@ -296,10 +297,7 @@ public sealed class Plugin : IDalamudPlugin
                 }
 
                 if (src.NpcId is { } ids &&
-                    kvp.Value is not null &&
-                    (!Configuration.ShowOnlyUnlearned ||
-                     IsSpellUnlocked(kvp.Key))
-                   )
+                    kvp.Value is not null && ShouldGenerate(kvp.Key))
                 {
                     record.NpcIds.AddRange(ids.Select(i => (uint)i));
                     added += ids.Count;
@@ -309,6 +307,24 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         Services.Log.Verbose($"Spells generated - {MobsByTerritory.Count} ({added})");
+    }
+
+    private static bool ShouldGenerate(int num)
+    {
+        if (Configuration is { MarkMobsInWorld: true, MarkMobsAllTheTime: true }) return true;
+        var unlocked = IsSpellUnlocked(num);
+        if (Configuration.ShowOnlyUnlearned)
+        {
+            return unlocked && ShouldShowNameplateIcons();
+        }
+
+        return ShouldShowNameplateIcons();
+    }
+
+    public static bool ShouldShowNameplateIcons()
+    {
+        if (Configuration is { MarkMobsInWorld: true, MarkMobsAllTheTime: true }) return true;
+        return IsBluMage() && Configuration.MarkMobsInWorld;
     }
 
     #region internal
