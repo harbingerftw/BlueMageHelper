@@ -119,8 +119,8 @@ public sealed class Plugin : IDalamudPlugin
         }
 
 // #if DEBUG
-        MainWindow.IsOpen = true;
-        ConfigWindow.IsOpen = true;
+//        MainWindow.IsOpen = true;
+//        ConfigWindow.IsOpen = true;
 // #endif
     }
 
